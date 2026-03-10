@@ -15,15 +15,31 @@
 <script>
 
 function addTodo(){
-  const input = document.getElementById("todoInput");
-  const text = input.value;
 
-  const li = document.createElement("li");
-  li.textContent = text;
+  const input = document.getElementById("todoInput")
+  const text = input.value
 
-  document.getElementById("todoList").appendChild(li);
+  if(text === "") return
 
-  input.value = "";
+  const li = document.createElement("li")
+
+  const span = document.createElement("span")
+  span.textContent = text
+
+  const delBtn = document.createElement("button")
+  delBtn.textContent = "❌"
+
+  delBtn.onclick = function(){
+    li.remove()
+  }
+
+  li.appendChild(span)
+  li.appendChild(delBtn)
+
+  document.getElementById("todoList").appendChild(li)
+
+  input.value = ""
+
 }
 
 </script>
