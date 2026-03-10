@@ -1,48 +1,114 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <title>Todo App</title>
-</head>
-<body>
+  <head>
+    <title>Todo App</title>
+    <style>
+      body {
+        font-family: Arial;
+        max-width: 400px;
+        margin: 40px auto;
+      }
 
-<h1>My Todo List</h1>
+      li {
+        display: flex;
+        gap: 10px;
+        margin: 8px 0;
+      }
 
-<input id="todoInput" placeholder="Add task">
-<button onclick="addTodo()">Add</button>
+      button {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>My Todo List</h1>
 
-<ul id="todoList"></ul>
+    <input id="todoInput" placeholder="Add task" />
+    <button onclick="addTodo()">Add</button>
 
-<script>
+    <ul id="todoList"></ul>
 
-function addTodo(){
+    <script>
+      let todos = JSON.parse(localStorage.getItem("todos")) || [];
 
-  const input = document.getElementById("todoInput")
-  const text = input.value
+      const list = document.getElementById("todoList");
 
-  if(text === "") return
+      function renderTodos() {
+        list.innerHTML = "";
 
-  const li = document.createElement("li")
+        todos.forEach((todo, index) => {
+          const li = document.createElement("li");
 
-  const span = document.createElement("span")
-  span.textContent = text
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.checked = todo.done;
 
-  const delBtn = document.createElement("button")
-  delBtn.textContent = "❌"
+          checkbox.onchange = function () {
+            todos[index].done = checkbox.checked;
+            saveTodos();
+            renderTodos();
+          };
 
-  delBtn.onclick = function(){
-    li.remove()
-  }
+          const span = document.createElement("span");
+          span.textContent = todo.text;
 
-  li.appendChild(span)
-  li.appendChild(delBtn)
+          if (todo.done) {
+            span.style.textDecoration = "line-through";
+          }
 
-  document.getElementById("todoList").appendChild(li)
+          const delBtn = document.createElement("button");
+          delBtn.textContent = "❌";
 
-  input.value = ""
+          delBtn.onclick = function () {
+            todos.splice(index, 1);
+            saveTodos();
+            renderTodos();
+          };
 
-}
+          li.appendChild(checkbox);
+          li.appendChild(span);
+          li.appendChild(delBtn);
 
-</script>
+          list.appendChild(li);
+        });
 
-</body>
+        checkbox.onchange = function () {
+          todos[index].done = checkbox.checked;
+
+          saveTodos();
+        };
+      }
+
+      function addTodo() {
+        const input = document.getElementById("todoInput");
+        const text = input.value;
+
+        if (text === "") return;
+
+        todos.push({
+          text: text,
+          done: false,
+        });
+        input.value = "";
+
+        saveTodos();
+
+        renderTodos();
+      }
+
+      const input = document.getElementById("todoInput");
+
+      input.addEventListener("keypress", function (e) {
+        if (e.key === "Enter") {
+          addTodo();
+        }
+      });
+
+      function saveTodos() {
+        localStorage.setItem("todos", JSON.stringify(todos));
+      }
+
+      renderTodos();
+    </script>
+  </body>
 </html>
